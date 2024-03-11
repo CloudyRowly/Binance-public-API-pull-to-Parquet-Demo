@@ -7,7 +7,9 @@ Output files: ``LTCUSDT_15m.parquet.snappy``, ``BTCUSDT_30m.parquet.snappy``
 
 A program that demonstate the use of Binance API and the operations on Parquet files.
 
-Testing for independent read and write off Parquet files.
+Test for independent read and write off Parquet files.
+
+Test for column selective querying.
 
 | Design choices made | Reasons                |
 |---------------------| --------------------- |
@@ -22,5 +24,5 @@ pip install binance-connector
 pip install pyarrow
 ```
 
-## Reading results
-![tables from reading the Parquet files](/resource/Screenshot%202024-03-12%20023848.png)
+## Results
+![tables from reading the Parquet files](/resource/Screenshot%202024-03-12%20030955.png)
