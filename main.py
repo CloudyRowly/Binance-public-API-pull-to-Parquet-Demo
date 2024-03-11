@@ -1,6 +1,7 @@
 from binance_api import *
 from enum import Enum
 import pandas as pd
+import os
 
 class Parameters(Enum):
     intervals = ["1s", "1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M"]
@@ -17,6 +18,7 @@ class Main():
 
     def write(self, pair, interval, limit):
         file_name = f"{pair}_{interval}.parquet.snappy"
+        path = os.path.join("data", file_name)
         temp = self.api.get_klines_limit(pair, interval, limit)
         data = pd.DataFrame(temp, columns=["Open time", 
                                            "Open",
@@ -30,12 +32,13 @@ class Main():
                                            "Taker buy base asset volume", 
                                            "Taker buy quote asset volume",
                                            "Ignore"])
-        data.to_parquet(file_name, compression="snappy")
+        data.to_parquet(path, compression="snappy")
         print(f"File {file_name} has been written.")
 
 
     def read(self, file_name):
-        return pd.read_parquet(file_name, engine="pyarrow")
+        path = os.path.join("data", file_name)
+        return pd.read_parquet(path, engine="pyarrow")
 
 
 if __name__ == "__main__":
