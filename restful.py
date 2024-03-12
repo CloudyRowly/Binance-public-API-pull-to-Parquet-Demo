@@ -1,4 +1,4 @@
-from binance_api import *
+from binance.spot import Spot
 from enum import Enum
 import pandas as pd
 import os
@@ -12,9 +12,17 @@ class Parameters(Enum):
     BTCUSDT = "BTCUSDT"
 
 
-class Main():
+class Rest():
     def __init__(self):
-        self.api = BinanceAPI()
+        self.api = Spot()
+
+    
+    def get_klines(self, symbol, interval):
+        return self.client.klines(symbol, interval)
+    
+
+    def get_klines_limit(self, symbol, interval, limit):
+        return self.client.klines(symbol, interval, limit=limit)
 
 
     def write(self, pair, interval, limit):
@@ -45,7 +53,7 @@ class Main():
     def read_selective(self, file_name, columns):
         path = os.path.join("data", file_name)
         return pd.read_parquet(path, columns=columns, engine="pyarrow")
-
+    
 
 def time_testing():
     s = time.time()
@@ -75,5 +83,5 @@ def time_testing():
 
 
 if __name__ == "__main__":
-    main = Main()
+    main = Rest()
     time_testing()
