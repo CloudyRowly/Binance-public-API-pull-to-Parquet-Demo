@@ -17,7 +17,11 @@ class Realtime():
 
 
     def message_handler(self, _, msg):
-        self.write(msg) 
+        try:
+            self.write(msg)
+        except Exception as e:
+            print("skipped write")
+            pass 
 
 
     def write(self, msg):
@@ -25,6 +29,7 @@ class Realtime():
         file_name = f"{message["stream"]}.parquet.snappy"
         path = os.path.join("data", file_name)
 
+        # Match the attributes return by stream to Rest API vocab
         att = ["t", "o", "h", "l", "c", "v", "T", "q", "n", "V", "Q", "B"]
         columns = ["Open time", 
                    "Open",
@@ -41,12 +46,17 @@ class Realtime():
         temp = dict()
         i = 0
         for a in att:
-            temp[columns[i]] = float(message["data"]["k"][a])
+            col = columns[i]
+            temp_message = message["data"]["k"][a]
+            if a == "t" or a == "T":
+                temp[col] = int(temp_message)
+            else:
+                temp[col] = float(temp_message)
             i += 1
 
         print(temp)
         
-        data = pd.DataFrame(temp) 
+        data = pd.DataFrame(temp, index=[0]) 
         data.to_parquet(path, compression="snappy")
         print(f"File {file_name} has been written.")
         print(Database.read("ltcusdt@kline_1s.parquet.snappy"))
