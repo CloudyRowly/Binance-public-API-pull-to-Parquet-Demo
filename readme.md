@@ -39,6 +39,8 @@ implementation: ``realtime.py``
 
 Uses websocket, useful for listening to real time data.
 
+**Observation:** first interval in the stream returns exception => Implemented exception handling to not write this interval into the data files. 
+
 
 ## Dependencies
 The following libraries are required:
