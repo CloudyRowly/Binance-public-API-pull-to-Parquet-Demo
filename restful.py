@@ -12,23 +12,34 @@ class Parameters(Enum):
     BTCUSDT = "BTCUSDT"
 
 
+class Database():
+    def read(file_name):
+        path = os.path.join("data", file_name)
+        return pd.read_parquet(path, engine="pyarrow")
+    
+
+    def read_selective(file_name, columns):
+        path = os.path.join("data", file_name)
+        return pd.read_parquet(path, columns=columns, engine="pyarrow")
+
+
 class Rest():
     def __init__(self):
         self.api = Spot()
 
     
     def get_klines(self, symbol, interval):
-        return self.client.klines(symbol, interval)
+        return self.api.klines(symbol, interval)
     
 
     def get_klines_limit(self, symbol, interval, limit):
-        return self.client.klines(symbol, interval, limit=limit)
+        return self.api.klines(symbol, interval, limit=limit)
 
 
     def write(self, pair, interval, limit):
         file_name = f"{pair}_{interval}.parquet.snappy"
         path = os.path.join("data", file_name)
-        temp = self.api.get_klines_limit(pair, interval, limit)
+        temp = self.get_klines_limit(pair, interval, limit)
         data = pd.DataFrame(temp, columns=["Open time", 
                                            "Open",
                                            "High", 
@@ -43,16 +54,6 @@ class Rest():
                                            "Ignore"])
         data.to_parquet(path, compression="snappy")
         print(f"File {file_name} has been written.")
-
-
-    def read(self, file_name):
-        path = os.path.join("data", file_name)
-        return pd.read_parquet(path, engine="pyarrow")
-    
-
-    def read_selective(self, file_name, columns):
-        path = os.path.join("data", file_name)
-        return pd.read_parquet(path, columns=columns, engine="pyarrow")
     
 
 def time_testing():
@@ -62,12 +63,12 @@ def time_testing():
     print(f"Time taken for writing: {e - s}")
 
     s = time.time()
-    print(main.read("LTCUSDT_15m.parquet.snappy"))
+    print(Database.read("LTCUSDT_15m.parquet.snappy"))
     e = time.time()
     print(f"Time taken for reading: {e - s}")
 
     s = time.time()
-    print(main.read_selective("LTCUSDT_15m.parquet.snappy", ["Open time", "Open", "Close time", "Close"]))
+    print(Database.read_selective("LTCUSDT_15m.parquet.snappy", ["Open time", "Open", "Close time", "Close"]))
     e = time.time()
     print(f"Time taken for selective reading: {e - s}")
 
@@ -77,7 +78,7 @@ def time_testing():
     print(f"Time taken for writing: {e - s}")
 
     s = time.time()
-    print(main.read("BTCUSDT_30m.parquet.snappy"))
+    print(Database.read("BTCUSDT_30m.parquet.snappy"))
     e = time.time()
     print(f"Time taken for reading: {e - s}")
 
