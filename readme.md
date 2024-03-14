@@ -58,6 +58,8 @@ pip install fastparquet
 
 ### Rest api testing result
 
+**Note**: Binance has a limit of 1000 intervals per request.
+
 ![tables from reading the Parquet files](/resource/Screenshot%202024-03-12%20030955.png)
 
 ### Real-time data pulling appending
