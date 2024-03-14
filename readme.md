@@ -12,8 +12,9 @@ A program that demonstate the use of Binance API and the operations on Parquet f
 
 | Design choices made | Reasons                |
 |---------------------| --------------------- |
-| Used "snappy" compression | Fastest query time for "selected column query" of all types of compression, even faster than uncompressed. (130% faster than the next compression method: GZIP)|
-| Used "PyArrow" engine for writing and reading Parquet files | Is natively supported by Pandas, the library used for Data framing.|
+| Used "snappy" compression | Fastest query time for "selected column query" of all types of compression, even faster than uncompressed. (130% faster than the next compression method: GZIP) (Source: [Riz Ang: What is Apache Parquet file](https://www.youtube.com/watch?v=PaDUxrI6ThA))|
+| Used "PyArrow" engine for writing and reading Parquet files | Is natively supported by Pandas, the library used for Data framing. Is faster than other engines at writing files.|
+| Used Fast Parquet engine for appending to Parquet file | PyArrow does not support Parquet file appending.|
 
 ### Restful API Test
 
@@ -39,6 +40,8 @@ implementation: ``realtime.py``
 
 Uses websocket, useful for listening to real time data.
 
+Py Arrow does not support Parquet file appending => Use Fast Parquet for appending instead
+
 **Observation:** first interval in the stream returns exception => Implemented exception handling to not write this interval into the data files. 
 
 
@@ -48,7 +51,15 @@ The following libraries are required:
 pip install pandas 
 pip install binance-connector
 pip install pyarrow
+pip install fastparquet
 ```
 
 ## Results
+
+### Rest api testing result
+
 ![tables from reading the Parquet files](/resource/Screenshot%202024-03-12%20030955.png)
+
+### Real-time data pulling appending
+
+![tables showing data progression](/resource/Screenshot%202024-03-14%20112909.png)

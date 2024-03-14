@@ -1,5 +1,6 @@
 from binance.websocket.spot.websocket_stream import SpotWebsocketStreamClient
 import pandas as pd
+from fastparquet import write as pq_write
 import os
 import time
 import json
@@ -13,18 +14,18 @@ class Realtime():
         
         # Subscibe to streams (create listeners)
         self.ws.kline(symbol="BTCUSDT", interval="1s")
-        self.ws.kline(symbol="LTCUSDT", interval="1s")
+        # self.ws.kline(symbol="LTCUSDT", interval="1s")
 
 
     def message_handler(self, _, msg):
         try:
             self.write(msg)
         except Exception as e:
-            print("skipped write")
+            print("skipped write: ", e)
             pass 
 
 
-    def write(self, msg):
+    def write(self, msg, new_file=False):
         message = json.loads(msg)
         file_name = f"{message["stream"]}.parquet.snappy"
         path = os.path.join("data", file_name)
@@ -49,21 +50,25 @@ class Realtime():
             col = columns[i]
             temp_message = message["data"]["k"][a]
             if a == "t" or a == "T":
-                temp[col] = int(temp_message)
+                temp[col] = [int(temp_message)]
             else:
-                temp[col] = float(temp_message)
+                temp[col] = [float(temp_message)]
             i += 1
 
-        print(temp)
+        # print(temp)
         
-        data = pd.DataFrame(temp, index=[0]) 
-        data.to_parquet(path, compression="snappy")
-        print(f"File {file_name} has been written.")
-        print(Database.read("ltcusdt@kline_1s.parquet.snappy"))
+        data = pd.DataFrame(temp, columns=columns) 
+
+        if (not os.path.exists(path)) or new_file:
+            data.to_parquet(path, engine="fastparquet", compression="snappy")
+            print(f"File {file_name} has been written.")
+        else:
+            pq_write(path, data, compression="SNAPPY", append=True)
+            print(f"File {file_name} has been appended.")
+        print(Database.read(file_name))
 
 
 if __name__ == "__main__":
     ws = Realtime()
-    time.sleep(2)
+    time.sleep(3)
     ws.ws.stop()
-    print(Database.read("ltcusdt@kline_1s.parquet.snappy"))

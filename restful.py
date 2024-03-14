@@ -15,12 +15,12 @@ class Parameters(Enum):
 class Database():
     def read(file_name):
         path = os.path.join("data", file_name)
-        return pd.read_parquet(path, engine="pyarrow")
+        return pd.read_parquet(path, engine="auto")
     
 
     def read_selective(file_name, columns):
         path = os.path.join("data", file_name)
-        return pd.read_parquet(path, columns=columns, engine="pyarrow")
+        return pd.read_parquet(path, columns=columns, engine="auto")
 
 
 class Rest():
