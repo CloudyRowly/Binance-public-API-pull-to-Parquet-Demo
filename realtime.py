@@ -18,6 +18,8 @@ class Realtime():
 
 
     def message_handler(self, _, msg):
+        """Listener handler for websocket. Calls write method.
+        """
         try:
             self.write(msg)
         except Exception as e:
@@ -26,6 +28,13 @@ class Realtime():
 
 
     def write(self, msg, new_file=False):
+        """Write in real-time to parquet file. Append if file exists.
+
+        Args:
+            msg: message from websocket
+            new_file (bool, optional): set to True if user wants a 
+                                       completely new file.
+        """
         message = json.loads(msg)
         file_name = f"{message["stream"]}.parquet.snappy"
         path = os.path.join("data", file_name)
@@ -54,8 +63,6 @@ class Realtime():
             else:
                 temp[col] = [float(temp_message)]
             i += 1
-
-        # print(temp)
         
         data = pd.DataFrame(temp, columns=columns) 
 
@@ -72,3 +79,4 @@ if __name__ == "__main__":
     ws = Realtime()
     time.sleep(3)
     ws.ws.stop()
+    # print(Database.read_selective("btcusdt@kline_1s.parquet.snappy", columns=["Open time", "Open"]))

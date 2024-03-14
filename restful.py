@@ -19,6 +19,15 @@ class Database():
     
 
     def read_selective(file_name, columns):
+        """Read only selected columns from parquet file.
+
+        Args:
+            file_name (_type_): _description_
+            columns (_type_): _description_
+
+        Returns:
+            pandas.Dataframe: queried columns
+        """
         path = os.path.join("data", file_name)
         return pd.read_parquet(path, columns=columns, engine="auto")
 
@@ -37,6 +46,13 @@ class Rest():
 
 
     def write(self, pair, interval, limit):
+        """write to parquet file.
+
+        Args:
+            pair (str): chosen trading pair
+            interval (str): trading interval
+            limit (int): number of interval to pull
+        """
         file_name = f"{pair}_{interval}.parquet.snappy"
         path = os.path.join("data", file_name)
         temp = self.get_klines_limit(pair, interval, limit)
