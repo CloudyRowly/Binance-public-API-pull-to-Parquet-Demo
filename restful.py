@@ -1,36 +1,8 @@
 from binance.spot import Spot
-from enum import Enum
 import pandas as pd
 import os
 import time
-
-class Parameters(Enum):
-    intervals = ["1s", "1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M"]
-    
-    # Pairs
-    LTCUSDT = "LTCUSDT"
-    BTCUSDT = "BTCUSDT"
-
-
-class Database():
-    def read(file_name):
-        path = os.path.join("data", file_name)
-        return pd.read_parquet(path, engine="auto")
-    
-
-    def read_selective(file_name, columns):
-        """Read only selected columns from parquet file.
-
-        Args:
-            file_name (_type_): _description_
-            columns (_type_): _description_
-
-        Returns:
-            pandas.Dataframe: queried columns
-        """
-        path = os.path.join("data", file_name)
-        return pd.read_parquet(path, columns=columns, engine="auto")
-
+from utils import *
 
 class Rest():
     def __init__(self):

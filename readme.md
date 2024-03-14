@@ -1,7 +1,7 @@
 # Data storage (Binance to Parquet)
 Language: Python
 
-Source files: ``realtime.py``, ``restful.py``
+Source files: ``realtime.py``, ``restful.py``, ``utils.py``
 
 Output folder: ``/data``
 
@@ -63,3 +63,11 @@ pip install fastparquet
 ### Real-time data pulling appending
 
 ![tables showing data progression](/resource/Screenshot%202024-03-14%20112909.png)
+
+### Selective reading
+
+Two tables showing column selected query and column + row_filtered query respectively.
+
+**Note**: index column is pandas' format for data Framing, is not modifiable. Index of filtered row does not match with its original order from full table.
+
+![table showing filtered data](/resource/Screenshot%202024-03-14%20120003.png)

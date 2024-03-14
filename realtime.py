@@ -4,7 +4,7 @@ from fastparquet import write as pq_write
 import os
 import time
 import json
-from restful import Database
+from utils import Database
 
 class Realtime():
     def __init__(self):
@@ -41,17 +41,17 @@ class Realtime():
 
         # Match the attributes return by stream to Rest API vocab
         att = ["t", "o", "h", "l", "c", "v", "T", "q", "n", "V", "Q", "B"]
-        columns = ["Open time", 
+        columns = ["Open_time", 
                    "Open",
                    "High", 
                    "Low", 
                    "Close", 
                    "Volume", 
-                   "Close time", 
-                   "Quote asset volume", 
-                   "Number of trades", 
-                   "Taker buy base asset volume", 
-                   "Taker buy quote asset volume",
+                   "Close_time", 
+                   "Quote_asset volume", 
+                   "Number_of_trades", 
+                   "Taker_buy_base_asset_volume", 
+                   "Taker_buy_quote_asset_volume",
                    "Ignore"]
         temp = dict()
         i = 0
@@ -79,4 +79,8 @@ if __name__ == "__main__":
     ws = Realtime()
     time.sleep(3)
     ws.ws.stop()
-    # print(Database.read_selective("btcusdt@kline_1s.parquet.snappy", columns=["Open time", "Open"]))
+    print(Database.read_selective("btcusdt@kline_1s.parquet.snappy", 
+                                  columns=["Open_time", "Open"]))
+    print(Database.read_selective("btcusdt@kline_1s.parquet.snappy", 
+                                  columns=["Open_time", "Open", "Number_of_trades"], 
+                                  filters=[("Number_of_trades", ">=", 9)]))
