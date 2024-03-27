@@ -44,6 +44,21 @@ Py Arrow does not support Parquet file appending => Use Fast Parquet for appendi
 
 **Observation:** first interval in the stream returns exception => Implemented exception handling to not write this interval into the data files. 
 
+### CSV to Parquet
+
+Utilizing [binance public data](https://github.com/binance/binance-public-data/tree/master), download monthly data using the command:
+
+``` python download-kline.py -t spot -s BTCUSDT -i 15m -folder D:\Learning\y2s2\comp3500\Binance-public-API-pull-to-Parquet-Demo\public_kline ```
+
+Binance will then return a folder of zip files:
+
+![CMD showing download process](<resource/Screenshot 2024-03-27 121433.png>)
+
+Using `unzip` in `csv_to_parquet.py`, unzip all file in the given folder, result:
+
+![extracted csv files](<resource/Screenshot 2024-03-27 124803.png>)
+
+
 
 ## Dependencies
 The following libraries are required:
