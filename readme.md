@@ -9,6 +9,12 @@ Utilizes [binance's api library](https://github.com/binance/binance-connector-py
 
 A program that demonstate the use of Binance API and the operations on Parquet files.
 
+Resources:
+- [Intro to Parquet](https://www.jumpingrivers.com/blog/parquet-file-format-big-data-r/)
+- [fast parquet](https://fastparquet.readthedocs.io/en/latest/api.html#fastparquet.write)
+- [Pandas' Data frame](https://pandas.pydata.org/pandas-docs/version/1.1/reference/api/pandas.DataFrame.html)
+
+
 
 | Design choices made | Reasons                |
 |---------------------| --------------------- |
@@ -104,6 +110,7 @@ Sampled data from 6 days (17th - 22nd April 2024):
 - 1GB of HDD can store ~27 days of tick data
 - Relatively affordable 256GB of space can store ~6971 days of tick data (19.1 years)
 - Takes ~362 seconds (~6 minutes) to convert and store a year worth of tick data
+- Can compress to a zip file => Further 55% size compressed => 85.5% in total compression ratio
 
 
 ## Dependencies
