@@ -1,11 +1,5 @@
 import pandas as pd
 
-d = {'col1': [600, 601, 630, 930, 980], 
-     'col2': [230, 260, 285, 295, 298]}
-df = pd.DataFrame(data=d)
-
-print("original:")
-print(df)
 
 def delta_encode(df, columns, ref = None):
     no_ref = False
@@ -29,9 +23,3 @@ def delta_encode(df, columns, ref = None):
             encoded_df[(columns[i])] = current_col
 
     return encoded_df
-
-col_list = ["col1", "col2"]
-test_df = delta_encode(df, col_list, pd.Series([600, 200]))
-
-print("\ndelta:")
-print(test_df)

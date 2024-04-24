@@ -4,6 +4,7 @@ import os
 from os.path import isfile, join
 from utils import Database
 import zipfile
+import time
 
 from delta_parquet import delta_encode
 
@@ -41,7 +42,7 @@ def csv_to_parquet(csv_file, parquet_file, columns, ref_row):
         print(f"File {csv_file} has been appended to {parquet_file}.")
 
 
-def merge_to_parquet(folder_path, parquet_file, delta_encoding=True):
+def merge_to_parquet(folder_path, parquet_file, column_names=None, delta_encoding=True):
     """Merge all CSV files in a folder to a parquet file.
     
     Args:
@@ -54,7 +55,13 @@ def merge_to_parquet(folder_path, parquet_file, delta_encoding=True):
     ref_row = None  # Reference row for delta encoding
 
     columns = []
-    initialized = True
+
+    if column_names is not None:
+        columns = column_names
+        initialized = False
+    else:
+        initialized = True
+
     for f in csv_files:
         # Create unified column names for all CSV files
         if(initialized):
@@ -74,5 +81,17 @@ def merge_to_parquet(folder_path, parquet_file, delta_encoding=True):
 
 if __name__ == "__main__":
     # unzip("public_kline/data/spot/monthly/klines/BTCUSDT/15m")
-    merge_to_parquet("public_kline/data/spot/monthly/klines/BTCUSDT/15m", "btcusdt@kline_15m_all_time.parquet.snappy")
-    print(Database.read("btcusdt@kline_15m_all_time.parquet.snappy"))
+    # merge_to_parquet("public_kline/data/spot/monthly/klines/BTCUSDT/15m", "btcusdt@kline_15m_all_time.parquet.snappy")
+    # print(Database.read("btcusdt@kline_15m_all_time.parquet.snappy"))
+    
+    
+    columns = ["trade_id", "price", "qty", "quote_qty", "time", "is_buyer_maker", "is_best_match"]
+    s = time.time()
+    merge_to_parquet("spot_data/data/spot/daily/trades/BTCUSDT", "data/btcusdt@trade_daily_17_22.parquet.snappy", column_names=columns, delta_encoding=False)
+    e = time.time()
+    print(f"time to write: {e - s}")
+    
+    s = time.time()
+    csv_to_parquet("spot_data/data/spot/daily/trades/BTCUSDT/BTCUSDT-trades-2024-04-19.csv", "data/btcusdt@trade_daily_19.parquet.snappy", columns, None)
+    e = time.time()
+    print(f"time to write: {e - s}")

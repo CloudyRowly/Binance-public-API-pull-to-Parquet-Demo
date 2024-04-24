@@ -16,6 +16,8 @@ A program that demonstate the use of Binance API and the operations on Parquet f
 | Used "PyArrow" engine for writing and reading Parquet files | Is natively supported by Pandas, the library used for Data framing. Is faster than other engines at writing files.|
 | Used Fast Parquet engine for appending to Parquet file | PyArrow does not support Parquet file appending.|
 
+---
+
 ### Restful API Test
 
 Module used: ``Spot`` from ``binance.spot`` 
@@ -29,6 +31,8 @@ Uses Binance restful API, easy interface to pull historical data.
 Test for independent read and write off Parquet files.
 
 Test for column selective querying.
+
+---
 
 ### Websocket stream Test (Real-time data pulling)
 
@@ -58,6 +62,48 @@ Using `unzip` in `csv_to_parquet.py`, unzip all file in the given folder, result
 
 ![extracted csv files](<resource/Screenshot 2024-03-27 124803.png>)
 
+---
+
+### Week 7 research progress: Focus on converting and storing tick data csv files
+
+Focused on the tick data aka trades.
+
+**Goal:** 
+- Investigate the resource need for tick data files, and the writing speed
+- Start investigating on the integration of data storage module into the system:
+    - Write node: [using Python for easy data processing, calculation of indicators (pre-processing)](https://automaticaddison.com/how-to-add-a-python-ros2-node-to-a-c-ros-2-package/)
+    - Reading node: use CPP for spped and efficiency, todo: investigate in [Apache Drill](https://drill.apache.org/docs/querying-parquet-files/) for SQL query
+
+
+#### Analysis
+
+Sampled data from 6 days (17th - 22nd April 2024):
+
+**CSV:**
+| Total | Per day |
+|-----------------------------|------------------------|
+| 12 012 572 entries          | ~2 002 095 entries |
+| 888 357 908 bytes           | ~148 059 651 bytes |
+
+**Parquet control test (only convert data on the 19th - the peak day):**
+| Properties                                           | value              |          note         |
+|------------------------------------------------------|--------------------|-----------------------|
+| Number of entries                                    | 2828283            |
+| CSV file size                                        | 209 333 843 bytes  |
+| Parquet file size                                    | 54 456 020 bytes   | ~74% size compression |
+| Time taken to convert and write to Parquet from csv  | ~1.44 seconds      |
+| Time taken to write each entry                       | ~0.50 micro-seconds|
+
+**Parquet:**
+| Total                                     | Per file                               | Per entry          |
+|-------------------------------------------|----------------------------------------|--------------------|
+| 220 309 998 bytes                         | ~36 718 333 bytes = 36.7 MB            | 18.339 bytes       |
+| 5.9533 seconds to convert csv to parquet  | ~0.99 seconds to convert csv to parquet| ~0.5 micro-seconds |
+
+- 75.2% size compression
+- 1GB of HDD can store ~27 days of tick data
+- Relatively affordable 256GB of space can store ~6971 days of tick data (19.1 years)
+- Takes ~362 seconds (~6 minutes) to convert and store a year worth of tick data
 
 
 ## Dependencies
@@ -88,3 +134,7 @@ Two tables showing column selected query and column + row_filtered query respect
 **Note**: index column is pandas' format for data Framing, is not modifiable. Index of filtered row does not match with its original order from full table.
 
 ![table showing filtered data](/resource/Screenshot%202024-03-14%20120003.png)
+
+### CSV to Parquet
+
+![a view of the written Parquet file](/resource/Screenshot%202024-04-24%20134353.png)
